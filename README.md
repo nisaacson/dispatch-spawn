@@ -1,6 +1,9 @@
 # Dispatch Spawn
 Execute fleet-spawn in a given git repo
 
+[![Build Status](https://travis-ci.org/nisaacson/dispatch-spawn.png)](https://travis-ci.org/nisaacson/dispatch-spawn)
+
+
 # Installation
 
 ```bash
