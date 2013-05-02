@@ -9,6 +9,8 @@ var performSpawn = require('../')
 var startHub = require('./setup/startHub')
 var startDrone = require('./setup/startDrone')
 describe('Spawn', function () {
+  this.timeout(0)
+  this.slow('10s')
   var hubProcess, droneProcess
   var port
   var host = 'localhost'
@@ -52,13 +54,22 @@ describe('Spawn', function () {
       }
       performSpawn(data, function (err) {
         should.not.exist(err, 'error spawning command: ' + JSON.stringify(err, null, ' '))
-        var url = 'http://localhost:' + port
-        request(url, function (err, res, body) {
-          should.not.exist(err)
-          res.statusCode.should.eql(200)
-          body.should.eql('apples hello world')
-          done()
-        })
+      })
+      var pattern = /apples server listening on port/;
+      droneProcess.stdout.on('data', function (stdoutData) {
+        if (pattern.test(stdoutData)) {
+          var url = 'http://localhost:' + serverPort + '/ping'
+          inspect(url,'url')
+          request(url, function (err, res, body) {
+            if (err) {
+              inspect(err, 'server error')
+            }
+            should.not.exist(err, 'error in server response: ' + JSON.stringify(err, null, ' '))
+            res.statusCode.should.eql(200)
+            body.should.eql('pong')
+            done()
+          })
+        }
       })
     })
   })
